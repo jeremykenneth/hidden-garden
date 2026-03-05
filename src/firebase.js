@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 if (!firebaseConfig.storageBucket) {
-  firebaseConfig.storageBucket = 'hidden-garden.firebasestorage.app';
+  firebaseConfig.storageBucket = 'utah-hidden-garden.firebasestorage.app';
 }
 
 let app;
