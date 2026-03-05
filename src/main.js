@@ -59,6 +59,44 @@ if (yearSpan) {
   yearSpan.textContent = new Date().getFullYear();
 }
 
+// Modal functionality
+const contactModal = document.getElementById('contactModal');
+
+function openModal() {
+  if (contactModal) contactModal.classList.add('show');
+}
+
+function closeModal() {
+  if (contactModal) contactModal.classList.remove('show');
+}
+
+document.getElementById('openContactModal')?.addEventListener('click', openModal);
+document.getElementById('openContactVolunteer')?.addEventListener('click', openModal);
+
+document.querySelectorAll('.close-modal').forEach(button => {
+  button.addEventListener('click', closeModal);
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target === contactModal) closeModal();
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(button => {
+  button.addEventListener('click', () => {
+    const item = button.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+
+    document.querySelectorAll('.faq-item.open').forEach(openItem => {
+      openItem.classList.remove('open');
+    });
+
+    if (!isOpen) {
+      item.classList.add('open');
+    }
+  });
+});
+
 // Initialize form handlers
 document.addEventListener('DOMContentLoaded', () => {
   const contactForm = document.querySelector('#contactModal form');

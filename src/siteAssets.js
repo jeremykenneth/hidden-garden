@@ -1,4 +1,6 @@
 import { getFileURL, getFilesURLsFromDirectory } from './storageUtils';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 const STORAGE_PATHS = {
   LOGO: 'site-assets/logo.png',
@@ -6,7 +8,7 @@ const STORAGE_PATHS = {
   HERO_IMAGE: 'site-assets/hero-image.jpg',
   GALLERY: 'site-assets/gallery',
   SLIDESHOW: 'site-assets/slideshow',
-  SPONSORS: 'site-assets/sponsors-logos'
+  SPONSORS: 'site-assets/sponsor-logos'
 };
 
 const PLACEHOLDER_IMAGES = {
@@ -101,19 +103,13 @@ export const loadSlideshowImages = async () => {
       textOverlay.className = 'slide-text';
 
       const heading = document.createElement('h2');
-      switch (index) {
-        case 0:
-          heading.textContent = 'Welcome to The Hidden Garden';
-          break;
-        case 1:
-          heading.textContent = 'Where Beauty Grows';
-          break;
-        case 2:
-          heading.textContent = 'Discover Nature\'s Wonders';
-          break;
-        default:
-          heading.textContent = 'Your Garden Awaits';
-      }
+      const captions = [
+        'Discover Hidden Gardens',
+        'Celebrating 30 Years',
+        'Inspiration Awaits',
+        'Private Gardens Unveiled'
+      ];
+      heading.textContent = captions[index % captions.length];
 
       textOverlay.appendChild(heading);
       slide.appendChild(textOverlay);
@@ -213,29 +209,46 @@ const goToSlide = (index) => {
 };
 
 export const loadSponsorLogos = async () => {
+  const placeholderLogos = [
+    { name: "Garden Center", imageUrl: "https://placehold.co/200x100/5c8d5a/FFFFFF?text=Garden+Center", websiteUrl: "" },
+    { name: "Green Thumb", imageUrl: "https://placehold.co/200x100/a9d6e5/333333?text=Green+Thumb", websiteUrl: "" },
+    { name: "Plant World", imageUrl: "https://placehold.co/200x100/8fbf8c/333333?text=Plant+World", websiteUrl: "" }
+  ];
+
   try {
     const sponsorLogosContainer = document.getElementById('sponsor-logos');
     if (!sponsorLogosContainer) return;
 
     sponsorLogosContainer.innerHTML = '';
 
-    let sponsorLogos = await getFilesURLsFromDirectory(STORAGE_PATHS.SPONSORS);
+    const sponsorsQuery = query(
+      collection(db, 'sponsors'),
+      where('active', '==', true),
+      orderBy('order')
+    );
+    const snapshot = await getDocs(sponsorsQuery);
 
-    if (!sponsorLogos.length) {
-      sponsorLogos = [
-        { name: "Garden Center", url: "https://placehold.co/200x100/5c8d5a/FFFFFF?text=Garden+Center" },
-        { name: "Green Thumb", url: "https://placehold.co/200x100/a9d6e5/333333?text=Green+Thumb" },
-        { name: "Plant World", url: "https://placehold.co/200x100/8fbf8c/333333?text=Plant+World" }
-      ];
+    if (snapshot.empty) {
+      initSponsorCarousel(placeholderLogos);
+      return;
     }
 
-    initSponsorCarousel(sponsorLogos);
+    const sponsors = await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        const logoPath = `${STORAGE_PATHS.SPONSORS}/${data.logoFileName}`;
+        const imageUrl = await getFileURL(logoPath);
+        return {
+          name: data.name || '',
+          imageUrl: imageUrl || '',
+          websiteUrl: data.url || ''
+        };
+      })
+    );
+
+    const validSponsors = sponsors.filter(s => s.imageUrl);
+    initSponsorCarousel(validSponsors.length ? validSponsors : placeholderLogos);
   } catch (error) {
-    const placeholderLogos = [
-      { name: "Garden Center", url: "https://placehold.co/200x100/5c8d5a/FFFFFF?text=Garden+Center" },
-      { name: "Green Thumb", url: "https://placehold.co/200x100/a9d6e5/333333?text=Green+Thumb" },
-      { name: "Plant World", url: "https://placehold.co/200x100/8fbf8c/333333?text=Plant+World" }
-    ];
     initSponsorCarousel(placeholderLogos);
   }
 };
@@ -251,7 +264,13 @@ function initSponsorCarousel(logos) {
   allLogos.forEach(logo => {
     const sponsorLogo = document.createElement('div');
     sponsorLogo.className = 'sponsor-logo';
-    sponsorLogo.innerHTML = `<img src="${logo.url}" alt="${logo.name.split('.')[0].replace(/[-_]/g, ' ')}" loading="eager">`;
+
+    if (logo.websiteUrl) {
+      sponsorLogo.innerHTML = `<a href="${logo.websiteUrl}" target="_blank" rel="noopener noreferrer"><img src="${logo.imageUrl}" alt="${logo.name}" loading="eager"></a>`;
+    } else {
+      sponsorLogo.innerHTML = `<img src="${logo.imageUrl}" alt="${logo.name}" loading="eager">`;
+    }
+
     sponsorLogosContainer.appendChild(sponsorLogo);
   });
 

@@ -1,7 +1,11 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "**",
@@ -18,6 +22,8 @@
   },
   "functions": {
     "source": "functions",
-    "predeploy": ["echo 'Running predeploy checks for functions...'"]
+    "predeploy": [
+      "echo 'Running predeploy checks for functions...'"
+    ]
   }
 }
