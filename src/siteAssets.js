@@ -229,7 +229,7 @@ export const loadSponsorLogos = async () => {
     const snapshot = await getDocs(sponsorsQuery);
 
     if (snapshot.empty) {
-      initSponsorCarousel(placeholderLogos);
+      renderSponsorGrid(placeholderLogos);
       return;
     }
 
@@ -247,21 +247,17 @@ export const loadSponsorLogos = async () => {
     );
 
     const validSponsors = sponsors.filter(s => s.imageUrl);
-    initSponsorCarousel(validSponsors.length ? validSponsors : placeholderLogos);
+    renderSponsorGrid(validSponsors.length ? validSponsors : placeholderLogos);
   } catch (error) {
-    initSponsorCarousel(placeholderLogos);
+    renderSponsorGrid(placeholderLogos);
   }
 };
 
-function initSponsorCarousel(logos) {
+function renderSponsorGrid(logos) {
   const sponsorLogosContainer = document.getElementById('sponsor-logos');
   if (!sponsorLogosContainer) return;
 
-  const getVisibleCount = () => window.innerWidth < 768 ? 1 : 3;
-
-  const allLogos = [...logos, ...logos, ...logos];
-
-  allLogos.forEach(logo => {
+  logos.forEach(logo => {
     const sponsorLogo = document.createElement('div');
     sponsorLogo.className = 'sponsor-logo';
 
@@ -273,78 +269,6 @@ function initSponsorCarousel(logos) {
 
     sponsorLogosContainer.appendChild(sponsorLogo);
   });
-
-  const visibleCount = getVisibleCount();
-  const middleOffset = -logos.length * 100 / visibleCount;
-  sponsorLogosContainer.style.transition = 'none';
-  sponsorLogosContainer.style.transform = `translateX(${middleOffset}%)`;
-
-  sponsorLogosContainer.offsetHeight;
-  const transitionDuration = window.innerWidth < 768 ? '0.3s' : '0.5s';
-  sponsorLogosContainer.style.transition = `transform ${transitionDuration} ease`;
-
-  let currentPosition = logos.length;
-  let isAnimating = false;
-  let interval;
-
-  function moveNext() {
-    if (isAnimating) return;
-    isAnimating = true;
-
-    const visibleCount = getVisibleCount();
-    const itemWidth = 100 / visibleCount;
-
-    if (currentPosition >= logos.length * 2 - 1) {
-      sponsorLogosContainer.style.transition = 'none';
-      currentPosition = logos.length;
-      sponsorLogosContainer.style.transform = `translateX(${-currentPosition * itemWidth}%)`;
-      sponsorLogosContainer.offsetHeight;
-
-      setTimeout(() => {
-        currentPosition += 1;
-        const td = window.innerWidth < 768 ? '0.3s' : '0.5s';
-        sponsorLogosContainer.style.transition = `transform ${td} ease`;
-        sponsorLogosContainer.style.transform = `translateX(${-currentPosition * itemWidth}%)`;
-
-        const tt = window.innerWidth < 768 ? 300 : 500;
-        setTimeout(() => { isAnimating = false; }, tt);
-      }, 20);
-      return;
-    }
-
-    currentPosition += 1;
-    const td = window.innerWidth < 768 ? '0.3s' : '0.5s';
-    sponsorLogosContainer.style.transition = `transform ${td} ease`;
-    sponsorLogosContainer.style.transform = `translateX(${-currentPosition * itemWidth}%)`;
-
-    const tt = window.innerWidth < 768 ? 300 : 500;
-    setTimeout(() => { isAnimating = false; }, tt);
-  }
-
-  function startAutoAdvance() {
-    clearInterval(interval);
-    interval = setInterval(moveNext, 3500);
-    if (!isAnimating) setTimeout(moveNext, 500);
-  }
-
-  startAutoAdvance();
-
-  const resizeHandler = () => {
-    isAnimating = false;
-    clearInterval(interval);
-    startAutoAdvance();
-
-    const oldVisibleCount = getVisibleCount();
-    setTimeout(() => {
-      const newVisibleCount = getVisibleCount();
-      if (oldVisibleCount !== newVisibleCount) {
-        loadSponsorLogos();
-        window.removeEventListener('resize', resizeHandler);
-      }
-    }, 100);
-  };
-
-  window.addEventListener('resize', resizeHandler);
 }
 
 export const initializeSiteImages = async () => {

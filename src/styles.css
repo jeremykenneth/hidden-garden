@@ -526,30 +526,18 @@ p {
   margin-bottom: 1.5rem;
 }
 
-.sponsor-carousel {
-  position: relative;
-  overflow: hidden;
-  margin: 1.5rem auto;
-  width: 100%;
-  max-width: 900px;
-}
-
 .sponsor-logos {
-  display: flex;
-  transition: transform 0.5s ease;
-  width: 100%;
-  will-change: transform;
-  backface-visibility: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  padding: 1rem 0;
 }
 
 .sponsor-logo {
-  background-color: transparent;
-  padding: 1rem;
-  flex: 0 0 100%;
-  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .sponsor-logo a {
@@ -561,14 +549,17 @@ p {
 .sponsor-logo img {
   max-width: 100%;
   height: auto;
-  max-height: 90px;
+  max-height: 80px;
   object-fit: contain;
   filter: grayscale(20%);
-  transition: filter 0.3s ease, transform 0.2s ease;
+  opacity: 0.85;
+  transition: filter 0.3s ease, opacity 0.3s ease, transform 0.2s ease;
 }
 
-.sponsor-logo a:hover img {
+.sponsor-logo a:hover img,
+.sponsor-logo img:hover {
   filter: grayscale(0%);
+  opacity: 1;
   transform: scale(1.05);
 }
 
@@ -836,9 +827,8 @@ footer p {
     font-size: 1rem;
   }
 
-  .sponsor-logo {
-    flex: 0 0 100%;
-    max-width: 100%;
+  .sponsor-logos {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .modal-content {
@@ -875,10 +865,8 @@ footer p {
     font-size: 2.8rem;
   }
 
-  .sponsor-logo {
-    flex: 0 0 calc(33.333%);
-    max-width: calc(33.333%);
-    padding: 1.5rem;
+  .sponsor-logos {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .tour-dates {
@@ -914,5 +902,9 @@ footer p {
 
   .hero-event h1 {
     font-size: 2.6rem;
+  }
+
+  .sponsor-logos {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
