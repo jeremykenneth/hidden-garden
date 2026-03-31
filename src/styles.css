@@ -79,7 +79,7 @@ nav {
   background-color: var(--secondary-color);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
 nav ul {
@@ -115,7 +115,6 @@ nav a:hover {
 
 .hero {
   background-color: #c1d5c0;
-  text-align: center;
   padding: 0;
   position: relative;
 }
@@ -132,6 +131,11 @@ nav a:hover {
   width: 100%;
 }
 
+@keyframes heroZoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.12); }
+}
+
 .slide {
   position: absolute;
   top: 0;
@@ -139,23 +143,35 @@ nav a:hover {
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
-  background-size: cover;
-  background-position: center;
+  transition: opacity 1.2s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.slide-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.slide.active .slide-bg {
+  animation: heroZoom 9s linear forwards;
 }
 
 .slide::after {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.35) 0%,
-    rgba(0, 0, 0, 0.15) 40%,
-    rgba(0, 0, 0, 0.3) 100%
+    to right,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.04) 55%,
+    rgba(0, 0, 0, 0.18) 100%
   );
 }
 
@@ -166,7 +182,8 @@ nav a:hover {
 .slide-text {
   color: #f5f5f5;
   text-align: center;
-  z-index: 10;
+  position: relative;
+  z-index: 2;
   padding: 1.5rem;
   max-width: 90%;
 }
@@ -205,18 +222,18 @@ nav a:hover {
   transform: scale(1.2);
 }
 
-/* ─── Hero Event Overlay ─── */
+/* ─── Hero Event Card ─── */
 
 .hero-event {
-  background: var(--primary-color);
-  padding: 2.5rem 1.5rem;
+  background: white;
   text-align: center;
+  padding: 2rem 1.5rem;
 }
 
 .hero-event .event-badge {
   display: inline-block;
-  background-color: var(--soft-green-bg);
-  color: var(--dark-green);
+  background-color: #d63d7a;
+  color: #ffffff;
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.8rem;
@@ -229,18 +246,17 @@ nav a:hover {
 
 .hero-event h1 {
   font-family: var(--font-heading);
-  font-size: 2.2rem;
+  font-size: 2rem;
   color: var(--dark-green);
   margin-bottom: 0.75rem;
   line-height: 1.2;
 }
 
 .hero-event .tagline {
-  font-size: 1rem;
-  color: var(--text-light);
-  max-width: 600px;
-  margin: 0 auto 1.5rem;
-  font-weight: 300;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  margin: 0 auto 1.25rem;
+  font-weight: 400;
 }
 
 .tour-dates {
@@ -253,25 +269,26 @@ nav a:hover {
 
 .tour-date-item {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
   font-size: 0.95rem;
   color: var(--text-color);
 }
 
 .tour-date-item .day {
   font-weight: 700;
-  min-width: 150px;
-  text-align: right;
 }
 
 .tour-date-item .time {
   color: var(--text-light);
   font-weight: 400;
+  font-size: 0.88rem;
 }
 
 .hero-cta {
   display: inline-block;
+  width: 100%;
 }
 
 /* ─── Main Content ─── */
@@ -393,9 +410,23 @@ p {
   box-shadow: var(--shadow-md);
 }
 
-.card-accent {
-  height: 4px;
-  background: linear-gradient(90deg, var(--secondary-color), var(--light-green));
+.card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.card:hover .card-image img {
+  transform: scale(1.04);
 }
 
 .card-content {
@@ -423,6 +454,125 @@ p {
   padding: 10px 22px;
 }
 
+.cta-button.amber {
+  background-color: #d97706;
+}
+
+.cta-button.amber:hover {
+  background-color: #b45309;
+}
+
+.cta-button.crimson {
+  background-color: #b91c1c;
+}
+
+.cta-button.crimson:hover {
+  background-color: #991b1b;
+}
+
+.cta-button.pink {
+  background-color: #be185d;
+}
+
+.cta-button.pink:hover {
+  background-color: #9d174d;
+}
+
+/* ─── About / Map ─── */
+
+.about-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-top: 0.5rem;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-subheading {
+  font-weight: 700;
+  color: var(--dark-green);
+  margin-bottom: 0.4rem;
+}
+
+.about-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.1rem 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.about-list li {
+  padding-left: 1.25rem;
+  position: relative;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.about-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  flex-shrink: 0;
+}
+
+.about-cta {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.about-map {
+  flex: 1;
+  min-width: 0;
+}
+
+#tour-map {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  isolation: isolate;
+}
+
+.map-caption {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+.map-pin-icon {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .about-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+
+  .about-text {
+    padding-top: 0.25rem;
+  }
+}
+
 /* ─── Earth Community Garden ─── */
 
 .earth-garden-grid {
@@ -430,6 +580,42 @@ p {
   grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-top: 1.5rem;
+}
+
+.earth-garden-item {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.earth-garden-item:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.earth-garden-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.earth-garden-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.earth-garden-item:hover .earth-garden-image img {
+  transform: scale(1.04);
+}
+
+.earth-garden-item-content {
+  padding: 1.25rem 1.1rem;
 }
 
 .earth-garden-item h3 {
@@ -441,6 +627,7 @@ p {
 .earth-garden-item p {
   color: var(--text-light);
   font-size: 0.95rem;
+  margin-bottom: 0;
 }
 
 /* ─── FAQ Accordion ─── */
@@ -790,18 +977,7 @@ footer p {
   }
 
   .hero-event h1 {
-    font-size: 1.6rem;
-  }
-
-  .tour-date-item {
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-
-  .tour-date-item .day {
-    text-align: center;
-    min-width: auto;
+    font-size: 1.75rem;
   }
 
   .cards {
@@ -858,32 +1034,39 @@ footer p {
 
 @media (min-width: 768px) {
   .slideshow {
-    height: 420px;
-  }
-
-  .slide-text h2 {
-    font-size: 2.8rem;
+    height: 520px;
   }
 
   .sponsor-logos {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .tour-dates {
-    flex-direction: row;
-    justify-content: center;
-    gap: 2rem;
-  }
-
-  .tour-date-item {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-  }
-
-  .tour-date-item .day {
+  .hero-event {
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 400px;
+    border-radius: 14px;
+    border-top: none;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.32);
+    padding: 2.25rem 2rem;
     text-align: center;
-    min-width: auto;
+  }
+
+  .hero-event h1 {
+    font-size: 2rem;
+  }
+
+  .hero-event .tagline {
+    font-size: 1rem;
+  }
+
+  .hero-cta {
+    width: 100%;
+    display: block;
+    text-align: center;
   }
 }
 
@@ -893,18 +1076,32 @@ footer p {
   }
 
   .slideshow {
-    height: 500px;
+    height: 620px;
   }
 
   .earth-garden-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .hero-event {
+    width: 430px;
+    right: 6%;
+    padding: 2.75rem 2.5rem;
+  }
+
   .hero-event h1 {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
   }
 
   .sponsor-logos {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  header {
+    min-height: 140px;
+  }
+
+  .logo {
+    max-width: 280px;
   }
 }

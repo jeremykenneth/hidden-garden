@@ -34,61 +34,82 @@
         <div class="slideshow-nav" id="slideshow-nav">
         </div>
       </div>
-    </div>
 
-    <div class="hero-event">
-      <span class="event-badge">Celebrating 30 Years</span>
-      <h1>2026 Utah Hidden Garden Tour</h1>
-      <p class="tagline">Utah's premier and longest-running garden tour, celebrating private gardens since 1996.</p>
-      <div class="tour-dates">
-        <div class="tour-date-item">
-          <span class="day">Friday, June 12</span>
-          <span class="time">12:00 PM &ndash; 8:00 PM</span>
+      <div class="hero-event">
+        <span class="event-badge">Celebrating 30 Years</span>
+        <h1>2026 Utah Hidden Garden Tour</h1>
+        <p class="tagline">Utah's premier and longest-running garden tour, celebrating private gardens since 1996.</p>
+        <div class="tour-dates">
+          <div class="tour-date-item">
+            <span class="day">Friday, June 12</span>
+            <span class="time">12:00 PM &ndash; 7:00 PM</span>
+          </div>
+          <div class="tour-date-item">
+            <span class="day">Saturday, June 13</span>
+            <span class="time">11:00 AM &ndash; 6:00 PM</span>
+          </div>
+          <div class="tour-date-item">
+            <span class="day">Sunday, June 14</span>
+            <span class="time">12:00 PM &ndash; 5:00 PM</span>
+          </div>
         </div>
-        <div class="tour-date-item">
-          <span class="day">Saturday, June 13</span>
-          <span class="time">10:00 AM &ndash; 6:00 PM</span>
-        </div>
-        <div class="tour-date-item">
-          <span class="day">Sunday, June 14</span>
-          <span class="time">11:00 AM &ndash; 5:00 PM</span>
-        </div>
+        <a href="https://hidden-garden.utouru.com/" target="_blank" rel="noopener" class="cta-button large hero-cta">Get Tickets</a>
       </div>
-      <a href="https://hidden-garden.utouru.com/" target="_blank" rel="noopener" class="cta-button large hero-cta">Get Tickets</a>
     </div>
 
     <main>
       <section id="about" class="section-card">
         <h2 class="section-title">About the Tour</h2>
-        <p>The Hidden Garden Tour showcases the magic of the hidden back yard garden. It offers visitors the opportunity to enjoy these beautiful gardens, and gain inspiration and ideas for their own gardens at home.</p>
-        <p>This event is a labor of love, from the garden owners that are willing to showcase their gardens, to the many volunteers that help to make this event run smoothly. Proceeds from the event are used to support local charities.</p>
+        <div class="about-layout">
+          <div class="about-text">
+            <p>Utah's premier and longest-running garden tour, the Hidden Garden Tour has been celebrating the beauty of private gardens since 1996. For our <strong>30th Anniversary</strong>, the 2026 tour spans three days across Salt Lake City &mdash; <strong>June 12&ndash;14, 2026</strong>.</p>
+            <p class="about-subheading">Here's what to expect:</p>
+            <ul class="about-list">
+              <li><strong>Tour stunning private home gardens</strong> you'd never otherwise have access to</li>
+              <li><strong>Gardens spread across the Salt Lake Valley</strong> — Holladay, Sugar House, Murray &amp; more</li>
+              <li>Proceeds support <strong>Earth Community Garden &amp; Food Pantry</strong>, The New Hope Foundation, and the Utah Tiny Home Garden Initiative</li>
+              <li>Have an exceptional garden? <strong>Apply to be featured</strong> or nominate one in your neighborhood</li>
+            </ul>
+            <a href="https://hidden-garden.utouru.com/" target="_blank" rel="noopener" class="cta-button about-cta">Get Your Tickets</a>
+          </div>
+          <div class="about-map">
+            <div id="tour-map"></div>
+            <p class="map-caption">Pins represent the Salt Lake Valley tour area. Exact garden locations are revealed with your ticket.</p>
+          </div>
+        </div>
       </section>
 
       <section id="get-involved">
         <h2 class="section-title">Get Involved</h2>
         <div class="cards">
           <div class="card">
-            <div class="card-accent"></div>
+            <div class="card-image">
+              <img src="https://placehold.co/600x400/5c8d5a/FFFFFF?text=Garden+Tour" data-storage-path="site-assets/get-involved/tickets.jpg" alt="Get Your Tickets" loading="lazy">
+            </div>
             <div class="card-content">
               <h3>Get Your Tickets</h3>
               <p>Don't miss out on this year's tour! Grab your tickets now for the 30th annual Utah Hidden Garden Tour.</p>
-              <a href="https://hidden-garden.utouru.com/" target="_blank" rel="noopener" class="cta-button">Buy Tickets</a>
+              <a href="https://hidden-garden.utouru.com/" target="_blank" rel="noopener" class="cta-button amber">Buy Tickets</a>
             </div>
           </div>
           <div class="card">
-            <div class="card-accent"></div>
+            <div class="card-image">
+              <img src="https://placehold.co/600x400/8fbf8c/FFFFFF?text=Submit+Your+Garden" data-storage-path="site-assets/get-involved/garden-submission.jpg" alt="Submit Your Garden" loading="lazy">
+            </div>
             <div class="card-content">
               <h3>Apply to Be on the Tour</h3>
               <p>Have a beautiful garden or pond you'd like to share? Apply to have your garden featured on this year's tour.</p>
-              <a href="https://hidden-garden.utouru.com/host-application/" target="_blank" rel="noopener" class="cta-button">Submit Your Garden</a>
+              <a href="https://hidden-garden.utouru.com/host-application/" target="_blank" rel="noopener" class="cta-button crimson">Submit Your Garden</a>
             </div>
           </div>
           <div class="card">
-            <div class="card-accent"></div>
+            <div class="card-image">
+              <img src="https://placehold.co/600x400/416840/FFFFFF?text=Volunteer+With+Us" data-storage-path="site-assets/get-involved/volunteer.jpg" alt="Volunteer With Us" loading="lazy">
+            </div>
             <div class="card-content">
               <h3>Volunteer With Us</h3>
               <p>We're always looking for helping hands! If you'd like to volunteer, reach out and let us know.</p>
-              <button id="openContactVolunteer" class="cta-button secondary">Contact Us</button>
+              <button id="openContactVolunteer" class="cta-button pink">Contact Us</button>
             </div>
           </div>
         </div>
@@ -99,16 +120,31 @@
         <p>We are proud that Earth Community Gardens network garden is financially supported by the community and private organizations. The network garden is located in South Salt Lake and is a beautiful community resource for walking, sitting, yoga, art, bird-watching, and connecting with nature.</p>
         <div class="earth-garden-grid">
           <div class="earth-garden-item">
-            <h3>Our Mission</h3>
-            <p>Provide a sustainable community space for growing fresh food and connecting neighbors through gardening.</p>
+            <div class="earth-garden-image">
+              <img src="https://placehold.co/600x360/5c8d5a/FFFFFF?text=Our+Mission" data-storage-path="site-assets/earth-garden/mission.jpg" alt="Our Mission" loading="lazy">
+            </div>
+            <div class="earth-garden-item-content">
+              <h3>Our Mission</h3>
+              <p>Provide a sustainable community space for growing fresh food and connecting neighbors through gardening.</p>
+            </div>
           </div>
           <div class="earth-garden-item">
-            <h3>Our Organization</h3>
-            <p>Earth Community Gardens is a 501(c)(3) nonprofit organization with a focus on community building and environmental education.</p>
+            <div class="earth-garden-image">
+              <img src="https://placehold.co/600x360/416840/FFFFFF?text=Our+Organization" data-storage-path="site-assets/earth-garden/organization.jpg" alt="Our Organization" loading="lazy">
+            </div>
+            <div class="earth-garden-item-content">
+              <h3>Our Organization</h3>
+              <p>Earth Community Gardens is a 501(c)(3) nonprofit organization with a focus on community building and environmental education.</p>
+            </div>
           </div>
           <div class="earth-garden-item">
-            <h3>Teaching Others</h3>
-            <p>Garden plots are available for community members, and we offer workshops on sustainable gardening practices year-round.</p>
+            <div class="earth-garden-image">
+              <img src="https://placehold.co/600x360/8fbf8c/FFFFFF?text=Teaching+Others" data-storage-path="site-assets/earth-garden/teaching.jpg" alt="Teaching Others" loading="lazy">
+            </div>
+            <div class="earth-garden-item-content">
+              <h3>Teaching Others</h3>
+              <p>Garden plots are available for community members, and we offer workshops on sustainable gardening practices year-round.</p>
+            </div>
           </div>
         </div>
       </section>

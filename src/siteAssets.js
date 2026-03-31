@@ -8,7 +8,17 @@ const STORAGE_PATHS = {
   HERO_IMAGE: 'site-assets/hero-image.jpg',
   GALLERY: 'site-assets/gallery',
   SLIDESHOW: 'site-assets/slideshow',
-  SPONSORS: 'site-assets/sponsor-logos'
+  SPONSORS: 'site-assets/sponsor-logos',
+  GET_INVOLVED: {
+    TICKETS: 'site-assets/get-involved/tickets.jpg',
+    SUBMIT: 'site-assets/get-involved/garden-submission.jpg',
+    VOLUNTEER: 'site-assets/get-involved/volunteer.jpg'
+  },
+  EARTH_GARDEN: {
+    MISSION: 'site-assets/earth-garden/mission.jpg',
+    ORGANIZATION: 'site-assets/earth-garden/organization.jpg',
+    TEACHING: 'site-assets/earth-garden/teaching.jpg'
+  }
 };
 
 const PLACEHOLDER_IMAGES = {
@@ -97,22 +107,11 @@ export const loadSlideshowImages = async () => {
     slideshowImages.forEach((image, index) => {
       const slide = document.createElement('div');
       slide.className = `slide ${index === 0 ? 'active' : ''}`;
-      slide.style.backgroundImage = `url(${image.url})`;
 
-      const textOverlay = document.createElement('div');
-      textOverlay.className = 'slide-text';
-
-      const heading = document.createElement('h2');
-      const captions = [
-        'Discover Hidden Gardens',
-        'Celebrating 30 Years',
-        'Inspiration Awaits',
-        'Private Gardens Unveiled'
-      ];
-      heading.textContent = captions[index % captions.length];
-
-      textOverlay.appendChild(heading);
-      slide.appendChild(textOverlay);
+      const slideBg = document.createElement('div');
+      slideBg.className = 'slide-bg';
+      slideBg.style.backgroundImage = `url(${image.url})`;
+      slide.appendChild(slideBg);
       slideshowContainer.appendChild(slide);
 
       const dot = document.createElement('div');
@@ -188,7 +187,7 @@ const initSlideshowRotation = () => {
 
     currentSlideIndex = (currentSlideIndex + 1) % slides.length;
     goToSlide(currentSlideIndex);
-  }, 5000);
+  }, 7000);
 };
 
 const goToSlide = (index) => {
@@ -200,7 +199,24 @@ const goToSlide = (index) => {
   currentSlideIndex = index;
 
   slides.forEach((slide, i) => {
-    slide.classList.toggle('active', i === index);
+    const bg = slide.querySelector('.slide-bg');
+    if (i === index) {
+      // Restart zoom from scale(1) for the incoming slide
+      if (bg) {
+        bg.style.animation = 'none';
+        bg.offsetHeight; // force reflow so animation restarts
+        bg.style.animation = '';
+      }
+      slide.classList.add('active');
+    } else if (slide.classList.contains('active')) {
+      // Freeze zoom at its current position during fade-out
+      if (bg) {
+        const frozenTransform = getComputedStyle(bg).transform;
+        bg.style.animation = 'none';
+        bg.style.transform = frozenTransform;
+      }
+      slide.classList.remove('active');
+    }
   });
 
   dots.forEach((dot, i) => {
@@ -262,14 +278,46 @@ function renderSponsorGrid(logos) {
     sponsorLogo.className = 'sponsor-logo';
 
     if (logo.websiteUrl) {
-      sponsorLogo.innerHTML = `<a href="${logo.websiteUrl}" target="_blank" rel="noopener noreferrer"><img src="${logo.imageUrl}" alt="${logo.name}" loading="eager"></a>`;
+      sponsorLogo.innerHTML = `<a href="${logo.websiteUrl}" target="_blank" rel="noopener noreferrer"><img src="${logo.imageUrl}" alt="${logo.name}" loading="lazy"></a>`;
     } else {
-      sponsorLogo.innerHTML = `<img src="${logo.imageUrl}" alt="${logo.name}" loading="eager">`;
+      sponsorLogo.innerHTML = `<img src="${logo.imageUrl}" alt="${logo.name}" loading="lazy">`;
     }
 
     sponsorLogosContainer.appendChild(sponsorLogo);
   });
 }
+
+const loadImageFromStorage = async (img) => {
+  const path = img.dataset.storagePath;
+  if (!path || img.dataset.storageLoaded) return;
+  img.dataset.storageLoaded = 'true';
+  try {
+    const url = await getFileURL(path);
+    if (url) img.src = url;
+  } catch (e) {
+    // Keep placeholder src
+  }
+};
+
+export const loadCardImages = () => {
+  const images = document.querySelectorAll('[data-storage-path]');
+  if (!images.length) return;
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          loadImageFromStorage(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '300px' });
+
+    images.forEach(img => observer.observe(img));
+  } else {
+    images.forEach(img => loadImageFromStorage(img));
+  }
+};
 
 export const initializeSiteImages = async () => {
   try {
@@ -277,7 +325,8 @@ export const initializeSiteImages = async () => {
 
     await Promise.all([
       loadSlideshowImages(),
-      loadSponsorLogos()
+      loadSponsorLogos(),
+      loadCardImages()
     ]);
   } catch (error) {
     // Site image initialization failed silently

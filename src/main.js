@@ -1,5 +1,7 @@
 import './firebase';
 import { handleContactFormSubmit } from './formHandlers';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Mobile menu toggle
 const menuBtn = document.querySelector('.menu-btn');
@@ -105,10 +107,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Tour map
+const initTourMap = () => {
+  const mapEl = document.getElementById('tour-map');
+  if (!mapEl) return;
+
+  const map = L.map('tour-map', {
+    center: [40.685, -111.865],
+    zoom: 11,
+    scrollWheelZoom: false,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 19,
+  }).addTo(map);
+
+  const pinSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+      <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22S28 24.5 28 14C28 6.268 21.732 0 14 0z" fill="#d63d7a"/>
+      <circle cx="14" cy="14" r="6" fill="white"/>
+    </svg>`;
+
+  const pinkIcon = L.divIcon({
+    className: 'map-pin-icon',
+    html: pinSvg,
+    iconSize: [28, 36],
+    iconAnchor: [14, 36],
+    popupAnchor: [0, -38],
+  });
+
+  const locations = [
+    { lat: 40.7168, lng: -111.8324, name: 'Sugar House' },
+    { lat: 40.6679, lng: -111.8148, name: 'Holladay' },
+    { lat: 40.6920, lng: -111.8579, name: 'Millcreek' },
+    { lat: 40.6880, lng: -111.8055, name: 'Cottonwood Heights' },
+    { lat: 40.5982, lng: -111.8688, name: 'Sandy' },
+    { lat: 40.6719, lng: -111.8829, name: 'Murray' },
+    { lat: 40.7358, lng: -111.8424, name: 'East Salt Lake' },
+    { lat: 40.6340, lng: -111.8900, name: 'Midvale' },
+    { lat: 40.7580, lng: -111.8910, name: 'Salt Lake City' },
+    { lat: 40.6560, lng: -111.9200, name: 'West Jordan' },
+  ];
+
+  locations.forEach(({ lat, lng, name }) => {
+    L.marker([lat, lng], { icon: pinkIcon })
+      .addTo(map)
+      .bindPopup(`<strong>${name}</strong>`);
+  });
+};
+
+initTourMap();
+
 // Initialize site images from Firebase Storage
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const { loadFavicon, loadSiteLogo, loadSlideshowImages, loadSponsorLogos } = await import('./siteAssets');
+    const { loadFavicon, loadSiteLogo, loadSlideshowImages, loadSponsorLogos, loadCardImages } = await import('./siteAssets');
 
     await Promise.all([
       loadFavicon(),
@@ -117,7 +172,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await Promise.all([
       loadSlideshowImages(),
-      loadSponsorLogos()
+      loadSponsorLogos(),
+      loadCardImages()
     ]);
   } catch (error) {
     // Site initialization failed silently
