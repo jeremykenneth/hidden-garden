@@ -115,8 +115,13 @@ const initTourMap = () => {
   const map = L.map('tour-map', {
     center: [40.685, -111.865],
     zoom: 11,
+    zoomControl: false,
     scrollWheelZoom: false,
-    zoomControl: true,
+    dragging: false,
+    touchZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
   });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -167,10 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await Promise.all([
       loadFavicon(),
-      loadSiteLogo()
-    ]);
-
-    await Promise.all([
+      loadSiteLogo(),
       loadSlideshowImages(),
       loadSponsorLogos(),
       loadCardImages()

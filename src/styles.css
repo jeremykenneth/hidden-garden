@@ -44,13 +44,14 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100px;
+  min-height: 140px;
   border-bottom: 3px solid var(--soft-green-bg);
 }
 
 .logo {
-  max-width: 180px;
-  height: auto;
+  max-width: 280px;
+  height: 93px;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -346,6 +347,7 @@ p {
 
 .cta-button {
   display: inline-block;
+  box-sizing: border-box;
   background-color: var(--secondary-color);
   color: white;
   padding: 14px 32px;
@@ -360,6 +362,7 @@ p {
   border: none;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  line-height: 1.4;
 }
 
 .cta-button:hover {
@@ -922,11 +925,6 @@ footer p {
 
   header {
     padding: 0.5rem 1rem;
-    min-height: 80px;
-  }
-
-  .logo {
-    max-width: 130px;
   }
 
   nav ul {
@@ -1071,6 +1069,15 @@ footer p {
 }
 
 @media (min-width: 1025px) {
+  header {
+    min-height: 160px;
+  }
+
+  .logo {
+    max-width: 400px;
+    height: 130px;
+  }
+
   .cards {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1097,11 +1104,4 @@ footer p {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  header {
-    min-height: 140px;
-  }
-
-  .logo {
-    max-width: 280px;
-  }
 }

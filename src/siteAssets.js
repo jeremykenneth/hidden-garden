@@ -1,4 +1,5 @@
-import { getFileURL, getFilesURLsFromDirectory } from './storageUtils';
+import { getFileURL, getFilesURLsFromDirectory, listFiles } from './storageUtils';
+import { getDownloadURL } from 'firebase/storage';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -50,18 +51,27 @@ export const loadSiteLogo = async () => {
     const logoElement = document.querySelector('.logo');
     if (!logoElement) return;
 
+    const cachedUrl = localStorage.getItem('logo_url');
+    if (cachedUrl) {
+      logoElement.src = cachedUrl;
+      logoElement.classList.add('logo-loaded');
+    }
+
     const imageUrl = await getFileURL(STORAGE_PATHS.LOGO);
 
     if (imageUrl) {
-      logoElement.src = imageUrl;
-    } else {
+      if (imageUrl !== cachedUrl) {
+        logoElement.src = imageUrl;
+        localStorage.setItem('logo_url', imageUrl);
+      }
+    } else if (!cachedUrl) {
       logoElement.src = PLACEHOLDER_IMAGES.LOGO;
     }
     logoElement.classList.add('logo-loaded');
   } catch (error) {
     try {
       const logoElement = document.querySelector('.logo');
-      if (logoElement) {
+      if (logoElement && !logoElement.classList.contains('logo-loaded')) {
         logoElement.src = PLACEHOLDER_IMAGES.LOGO;
         logoElement.classList.add('logo-loaded');
       }
@@ -85,6 +95,23 @@ export const loadHeroImage = async () => {
   }
 };
 
+const createSlide = (url, index, slideshowContainer, slideshowNav) => {
+  const slide = document.createElement('div');
+  slide.className = `slide ${index === 0 ? 'active' : ''}`;
+
+  const slideBg = document.createElement('div');
+  slideBg.className = 'slide-bg';
+  slideBg.style.backgroundImage = `url(${url})`;
+  slide.appendChild(slideBg);
+  slideshowContainer.appendChild(slide);
+
+  const dot = document.createElement('div');
+  dot.className = `slideshow-dot ${index === 0 ? 'active' : ''}`;
+  dot.dataset.index = index;
+  dot.addEventListener('click', () => goToSlide(index));
+  slideshowNav.appendChild(dot);
+};
+
 export const loadSlideshowImages = async () => {
   try {
     const slideshowContainer = document.getElementById('hero-slideshow');
@@ -95,36 +122,36 @@ export const loadSlideshowImages = async () => {
     slideshowContainer.innerHTML = '';
     slideshowNav.innerHTML = '';
 
-    let slideshowImages = await getFilesURLsFromDirectory(STORAGE_PATHS.SLIDESHOW);
+    const fileRefs = await listFiles(STORAGE_PATHS.SLIDESHOW);
 
-    if (!slideshowImages.length) {
-      slideshowImages = PLACEHOLDER_IMAGES.SLIDESHOW.map((url, index) => ({
-        name: `placeholder-${index + 1}`,
-        url
-      }));
+    if (!fileRefs.length) {
+      PLACEHOLDER_IMAGES.SLIDESHOW.forEach((url, index) => {
+        createSlide(url, index, slideshowContainer, slideshowNav);
+      });
+      if (PLACEHOLDER_IMAGES.SLIDESHOW.length > 1) {
+        initSlideshowRotation();
+        initTouchSwipe(slideshowContainer, PLACEHOLDER_IMAGES.SLIDESHOW.length);
+      }
+      return;
     }
 
-    slideshowImages.forEach((image, index) => {
-      const slide = document.createElement('div');
-      slide.className = `slide ${index === 0 ? 'active' : ''}`;
+    const firstUrl = await getDownloadURL(fileRefs[0]);
+    createSlide(firstUrl, 0, slideshowContainer, slideshowNav);
 
-      const slideBg = document.createElement('div');
-      slideBg.className = 'slide-bg';
-      slideBg.style.backgroundImage = `url(${image.url})`;
-      slide.appendChild(slideBg);
-      slideshowContainer.appendChild(slide);
+    if (fileRefs.length > 1) {
+      const remainingUrls = await Promise.all(
+        fileRefs.slice(1).map(async (fileRef) => {
+          try { return await getDownloadURL(fileRef); }
+          catch { return null; }
+        })
+      );
 
-      const dot = document.createElement('div');
-      dot.className = `slideshow-dot ${index === 0 ? 'active' : ''}`;
-      dot.dataset.index = index;
-      dot.addEventListener('click', () => goToSlide(index));
+      remainingUrls.forEach((url, i) => {
+        if (url) createSlide(url, i + 1, slideshowContainer, slideshowNav);
+      });
 
-      slideshowNav.appendChild(dot);
-    });
-
-    if (slideshowImages.length > 1) {
       initSlideshowRotation();
-      initTouchSwipe(slideshowContainer, slideshowImages.length);
+      initTouchSwipe(slideshowContainer, slideshowContainer.querySelectorAll('.slide').length);
     }
   } catch (error) {
     // Slideshow load failed silently
@@ -278,9 +305,9 @@ function renderSponsorGrid(logos) {
     sponsorLogo.className = 'sponsor-logo';
 
     if (logo.websiteUrl) {
-      sponsorLogo.innerHTML = `<a href="${logo.websiteUrl}" target="_blank" rel="noopener noreferrer"><img src="${logo.imageUrl}" alt="${logo.name}" loading="lazy"></a>`;
+      sponsorLogo.innerHTML = `<a href="${logo.websiteUrl}" target="_blank" rel="noopener noreferrer"><img src="${logo.imageUrl}" alt="${logo.name}"></a>`;
     } else {
-      sponsorLogo.innerHTML = `<img src="${logo.imageUrl}" alt="${logo.name}" loading="lazy">`;
+      sponsorLogo.innerHTML = `<img src="${logo.imageUrl}" alt="${logo.name}">`;
     }
 
     sponsorLogosContainer.appendChild(sponsorLogo);
@@ -303,20 +330,7 @@ export const loadCardImages = () => {
   const images = document.querySelectorAll('[data-storage-path]');
   if (!images.length) return;
 
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          loadImageFromStorage(entry.target);
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '300px' });
-
-    images.forEach(img => observer.observe(img));
-  } else {
-    images.forEach(img => loadImageFromStorage(img));
-  }
+  images.forEach(img => loadImageFromStorage(img));
 };
 
 export const initializeSiteImages = async () => {
